@@ -1,2 +1,2 @@
 # CuckooHash
-Python implementation of a cuckoo hash table.
+Python implementation of a cuckoo hash table class.

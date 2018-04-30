@@ -1,4 +1,4 @@
-from BitHash import BitHash, ResetBitHash, badHashFunc
+from BitHash import BitHash, ResetBitHash
 import string
 import random
 import time
@@ -20,29 +20,19 @@ class CuckooHash(object):
     def __len__(self): return self.__numKeys    
         
     #hashes a string and returns two hash values as a tuple   
-    def __hashFunc(self, s): 
-        #worst hash func
-        #v1 = badHashFunc(s)
-        #v2 = badHashFunc(s, v1)
-        #return v1 % len(self.__hashArray1), v2 % len(self.__hashArray1)
-        
-        #bad hash func
-        #v1 = BitHash(s)  % len(self.__hashArray1)
-        #v2 = BitHash(s, v1) % len(self.__hashArray1)
-        #return v1, v2 
-    
-    # good hash func
+    def __hashFunc(self, s):
         v1 = BitHash(s) 
         v2 = BitHash(s, v1)
         return v1 % len(self.__hashArray1), v2 % len(self.__hashArray1)    
     
-    #add comment
+    #searches for a given key in the hash table, if found return its data,
+    #if not return None
     def find(self, key):
         
         #hash the given key using two hash functions
         bucket1, bucket2 = self.__hashFunc(key)
         
-        #check if  node exists in either hash array and has the correct key
+        #check if node exists in either hash array and has the correct key
         #if found return the data
         if self.__hashArray1[bucket1] and self.__hashArray1[bucket1].key == key:
             return self.__hashArray1[bucket1].data
@@ -53,7 +43,8 @@ class CuckooHash(object):
         #if no node found return none
         return None
     
-    #add comment
+    #deletes a given key from the hash table, return True upon success,
+    #otherwise return false, key not inserted
     def delete(self, key): 
         
         #check to see if the key was inserted,
@@ -76,7 +67,9 @@ class CuckooHash(object):
             
         return True
         
-    #add comment
+    #creates a node from a key, data pair and inserts a node into the hash table,
+    #return True upon success, otherwise if node already in table, return False
+    #account for hash table overflow and infinite looping
     def insert(self, key, data, count = 0):
         
         #check for infinite loops and reset bit hash
@@ -100,7 +93,7 @@ class CuckooHash(object):
         #hash the given key using two hash functions
         bucket1, bucket2 = self.__hashFunc(key)
         
-        #Try to insert into the first hash array, increment the key counter
+        #try to insert into the first hash array, increment the key counter
         if not self.__hashArray1[bucket1]: 
             self.__hashArray1[bucket1] = Node(key, data)
             self.__numKeys += 1
@@ -131,6 +124,7 @@ class CuckooHash(object):
             
         return True
     
+    #grows the hash table and rehashes all keys
     def __growHash(self):
         #calculate size of new hash table
         newSize = len(self.__hashArray1) * 2
@@ -146,7 +140,7 @@ class CuckooHash(object):
         if newSize == "newSize":
             newSize = len(self.__hashArray1)
         
-        #create a new hash table using a new size
+        #create a new hash table using new size
         newHashTable = CuckooHash(newSize)
         
         #loop through the old hash array and 
@@ -182,12 +176,20 @@ def __test1():
     h.insert("H", "77")
     h.insert("IIII", "888")
     
-    for p in h.pairs(): 
-        print(p, end="")
-    print()
-        
-    l = [k for k in h.keys()]
-    print(l)
+    n = h.find("IIII")
+    a = h.find("A")
+    b = h.find("B")
+    c = h.find("C")
+    
+    if n == "888":
+        print("Success!")
+    if a == "0":
+            print("Success!")
+    if b == "1":
+            print("Success!")
+    if c == "2":
+            print("Your search method was successful!")      
+    
     
 def __test2():
     size = 91000
@@ -223,7 +225,7 @@ def __test3():
     print("There were", missing, "records missing from CuckooHashTab")
     
 def __test4():
-    size = 100
+    size = 1000
     
     c = CuckooHash(100)
     l = []
@@ -245,19 +247,21 @@ def __test4():
         if c.insert(item, n) == True:
             count += 1        
             print("It is True that the function inserted 1 item.")
-        print("It is", c.insert(s, i),"that the function inserted 1 item.")
+        else:
+            print("It is", c.insert(s, i),"that the function inserted 1 item.")
     
     if count == deletionNumber:
         print("Success! The duplicate keys weren't inserted.")
         
     else:
         print("Faliure! Check your deletion method. Check your insertion method.")
-        
+               
 def __main():
+    __test1()
     __test2()
     __test3()
     __test4()
-         
+        
 
 if __name__ == '__main__':
     __main()

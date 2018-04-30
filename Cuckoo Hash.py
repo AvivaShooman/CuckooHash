@@ -132,10 +132,11 @@ class CuckooHash(object):
         #rehash keys and insert into table
         self.__copyHashTable(newSize)
     
-    #add better comment, rehash keys and insert into table    
+    #copies a hash table and accounts for size growth or no size growth,
+    #rehashes all keys while inserting into correct place in hash table    
     def __copyHashTable(self, newSize = "newSize"):
         
-        #if no arguemnet is given, 
+        #if no arguement is given, 
         #initialize newSize to size of current hash table
         if newSize == "newSize":
             newSize = len(self.__hashArray1)
@@ -162,9 +163,11 @@ class CuckooHash(object):
         
         #set the new number of keys to the original reference  
         self.__numKeys = newHashTable.__numKeys   
-        
+ 
+###TEST CODE###        
 def __test1():
-            
+    
+    #inserts some values into hash table and checks find method        
     h = CuckooHash(100)          
     h.insert("A", "0")
     h.insert("B", "1")
@@ -192,6 +195,7 @@ def __test1():
     
     
 def __test2():
+    #calculates time per insert, from hash table class
     size = 91000
     
     t = time.time()
@@ -202,6 +206,7 @@ def __test2():
     print(t, "seconds  ", size/t, "inserts per second")
     
 def __test3():
+    #from hash table class
     size = 20000
     missing = 0
     
@@ -223,10 +228,14 @@ def __test3():
             missing += 1
             
     print("There were", missing, "records missing from CuckooHashTab")
-    
+
+#really fun test code!    
 def __test4():
+    #initialize size to larger than size of hash table, checks grow function
     size = 1000
     
+    #creates a bunch of random strings, 
+    #saves to a list and checks if they were inserted
     c = CuckooHash(100)
     l = []
     for i in range(size):
@@ -236,11 +245,14 @@ def __test4():
         print("It is", c.insert(s, i),"that the function inserted 1 item.")
         print("There are", len(c), "items in the hash table.")
     
+    #choose an arbitrary number of keys to delete, deletes the given number of keys
     deletionNumber = 53
     
     for i in range(deletionNumber):
         print("It is", c.delete(l[i]),"that the item", l[i], "has been deleted.")
-        
+    
+    #then re-inserts all keys from saved list, checking if only previous deleted keys succeed
+    #counts how many keys were inserted
     count = 0
     for item in l:
         n = random.randint(1, 100)
@@ -250,6 +262,7 @@ def __test4():
         else:
             print("It is", c.insert(s, i),"that the function inserted 1 item.")
     
+    #checks if count matches number deleted
     if count == deletionNumber:
         print("Success! The duplicate keys weren't inserted.")
         
